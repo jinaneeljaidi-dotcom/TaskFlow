@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter une question</title>
+</head>
+<body>
+
+<h1>Ajouter une question à un examen</h1>
+
+<form id="form-question">
+
+    <!-- Champ : nom du propriétaire -->
+    <label for="proprietaire">Nom du propriétaire :</label>
+    <input type="text" id="proprietaire" required>
+
+    <!-- Champ : nom de l'examen -->
+    <label for="examen">Nom de l'examen :</label>
+    <input type="text" id="examen" required>
+
+    <!-- Énoncé de la question -->
+    <label for="enonce">Énoncé de la question :</label>
+    <textarea id="enonce" required></textarea>
+
+    <!-- Durée en secondes et points -->
+    <label for="duree">Durée (secondes) :</label>
+    <input type="number" id="duree" required>
+
+    <label for="points">Points :</label>
+    <input type="number" id="points" required>
+
+    <!-- Conteneur pour les propositions -->
+    <div id="propositions"></div>
+
+    <!-- Bouton pour ajouter une proposition -->
+    <button type="button" id="ajouter-proposition">
+        Ajouter une proposition
+    </button>
+
+    <button type="submit">Ajouter la question</button>
+
+</form>
+
+<script src="script2.js"></script>
+
+</body>
+</html>
