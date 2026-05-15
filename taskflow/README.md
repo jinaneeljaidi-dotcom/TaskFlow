@@ -1,1 +1,2 @@
-# Taskflow
+node_modules/
+.env
