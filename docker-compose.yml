@@ -1,0 +1,49 @@
+# Orchestrates MongoDB, Express backend, and Nginx frontend for TaskFlow
+
+services:
+  # MongoDB database — only accessible inside Docker network
+  mongo:
+    image: mongo:7
+    container_name: taskflow-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: taskflow
+    volumes:
+      - mongo_data:/data/db   # persist data across restarts
+    networks:
+      - taskflow-net
+
+  # Express API backend
+  backend:
+    build: ./backend
+    container_name: taskflow-backend
+    restart: unless-stopped
+    env_file:
+      - path: ./backend/.env   # copy backend/.env.example to backend/.env before first run
+        required: true
+    depends_on:
+      - mongo
+    networks:
+      - taskflow-net
+    ports:
+      - "5000:5000"
+
+  # Nginx serving static Vanilla JS frontend
+  frontend:
+    build: ./frontend
+    container_name: taskflow-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - taskflow-net
+    ports:
+      - "8080:80"
+
+volumes:
+  mongo_data:   # named volume so data persists between docker-compose down/up
+
+networks:
+  taskflow-net:   # isolated bridge network shared by all services
