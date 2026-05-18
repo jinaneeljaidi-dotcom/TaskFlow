@@ -31,3 +31,18 @@ router.delete('/tasks/:id', auth, async (req, res) => {
 });
 
 module.exports = router;
+// PATCH mettre à jour uniquement le statut
+router.patch('/tasks/:id/status', auth, async (req, res) => {
+  const { statut } = req.body;
+  const allowed = ['a faire', 'en cours', 'termine'];
+  if (!allowed.includes(statut)) {
+    return res.status(400).json({ error: 'Statut invalide' });
+  }
+  const task = await Task.findByIdAndUpdate(
+    req.params.id,
+    { statut },
+    { new: true }
+  );
+  res.json(task);
+});
+
