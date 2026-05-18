@@ -25,7 +25,7 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// GET /api/projects/:id
+ 
 router.get('/:id', auth, async (req, res) => {
   try {
     const project = await Project.findById(req.params.id).populate('owner members', 'name email');
