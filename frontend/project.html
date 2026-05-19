@@ -1,0 +1,114 @@
+<!-- Project detail page — tasks, members, activity feed -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TaskFlow — Project</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav id="nav"></nav>
+  <div class="container">
+    <h1 id="project-title">Loading…</h1>
+    <p id="project-desc"></p>
+
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:1.5rem;margin-top:1.5rem">
+      <div>
+        <!-- Task filters -->
+        <div class="filters">
+          <input id="filter-search" placeholder="Search tasks…">
+          <select id="filter-status">
+            <option value="">All statuses</option>
+            <option>à faire</option>
+            <option>en cours</option>
+            <option>terminé</option>
+          </select>
+          <select id="filter-priority">
+            <option value="">All priorities</option>
+            <option>haute</option>
+            <option>moyenne</option>
+            <option>basse</option>
+          </select>
+        </div>
+
+        <div id="tasks-list"></div>
+        <div id="task-pagination" class="pagination"></div>
+
+        <!-- New task form -->
+        <div class="card" style="margin-top:1.5rem">
+          <h2>New Task</h2>
+          <form id="task-form">
+            <input name="title" placeholder="Title" required>
+            <textarea name="description" placeholder="Description" rows="2"></textarea>
+            <select name="priority">
+              <option value="moyenne">Moyenne</option>
+              <option value="haute">Haute</option>
+              <option value="basse">Basse</option>
+            </select>
+            <select name="status">
+              <option value="à faire">À faire</option>
+              <option value="en cours">En cours</option>
+              <option value="terminé">Terminé</option>
+            </select>
+            <input name="deadline" type="date">
+            <select name="assignedTo" id="assignedTo"><option value="">— Unassigned —</option></select>
+            <button type="submit">Add Task</button>
+          </form>
+        </div>
+      </div>
+
+      <div>
+        <!-- Members panel -->
+        <div class="card">
+          <h2>Members</h2>
+          <ul id="members-list" style="padding-left:1rem;line-height:2"></ul>
+          <form id="invite-form" style="margin-top:0.75rem">
+            <input id="invite-email" type="email" placeholder="Email to invite">
+            <button type="submit">Invite</button>
+          </form>
+        </div>
+
+        <!-- Activity feed -->
+        <div class="card" style="margin-top:1rem">
+          <h2>Activity</h2>
+          <div id="activity-feed"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/notifications.js"></script>
+  <script src="/js/members.js"></script>
+  <script src="/js/tasks.js"></script>
+  <script>
+    // Load members panel and activity feed on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadMembers('members-list');
+
+      document.getElementById('invite-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await inviteMember(document.getElementById('invite-email').value);
+        document.getElementById('invite-email').value = '';
+      });
+
+      // Activity feed
+      const pId = new URLSearchParams(location.search).get('id');
+      if (pId) {
+        const { data } = await api.get(`/projects/${pId}/activities`);
+        const feed = document.getElementById('activity-feed');
+        feed.innerHTML = '';
+        data.forEach(a => {
+          const d = document.createElement('div');
+          d.className = 'activity-item';
+          const when = new Date(a.createdAt).toLocaleString();
+          d.textContent = `${a.user?.name || 'Someone'} ${a.action} — ${a.detail || ''} · ${when}`;
+          feed.appendChild(d);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

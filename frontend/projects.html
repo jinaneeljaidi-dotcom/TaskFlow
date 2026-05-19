@@ -1,0 +1,37 @@
+<!-- Projects list page — create and manage all user projects -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TaskFlow — Projects</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav id="nav"></nav>
+  <div class="container">
+    <h1>Projects</h1>
+    <div class="card">
+      <h2>New Project</h2>
+      <form id="project-form">
+        <input name="title" placeholder="Project title" required>
+        <textarea name="description" placeholder="Description" rows="2"></textarea>
+        <input name="deadline" type="date">
+        <select name="status">
+          <option value="actif">Actif</option>
+          <option value="en pause">En pause</option>
+          <option value="archivé">Archivé</option>
+        </select>
+        <button type="submit">Create</button>
+      </form>
+    </div>
+    <div id="projects-list" class="grid"></div>
+    <div id="pagination" class="pagination"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/notifications.js"></script>
+  <script src="/js/projects.js"></script>
+</body>
+</html>
