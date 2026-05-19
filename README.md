@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # TaskFlow — Application de gestion de projets collaboratifs
 
 ## Stack technique
@@ -38,3 +39,6 @@ docker-compose up --build
 - `fix:` correction de bug
 - `docs:` documentation
 - `refactor:` refactoring
+=======
+# Taskflow
+>>>>>>> main
