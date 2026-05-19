@@ -1,22 +1,39 @@
-const router  = require('express').Router();
-const auth    = require('../middlewares/auth');
-const isOwner = require('../middlewares/isOwner');
-const User    = require('../models/User');
+const express = require('express')
+const router = express.Router()
+const Project = require('../models/Project')
+const User = require('../models/User')
+const auth = require('../middleware/auth')
 
- 
-router.post('/:id/members', auth, isOwner, async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
-  req.project.members.addToSet(user._id);
-  await req.project.save();
-  res.json({ message: 'Membre ajouté' });
-});
+router.post('/:id/invite', auth, async (req, res) => {
+  try {
+    const projet = await Project.findOne({ _id: req.params.id, createur: req.user.id })
+    if (!projet) return res.status(403).json({ message: 'Accès refusé' })
 
- 
-router.delete('/:id/members/:userId', auth, isOwner, async (req, res) => {
-  req.project.members.pull(req.params.userId);
-  await req.project.save();
-  res.json({ message: 'Membre retiré' });
-});
+    const userAInviter = await User.findOne({ email: req.body.email })
+    if (!userAInviter) return res.status(404).json({ message: 'Utilisateur introuvable' })
 
-module.exports = router;
+    if (projet.membres.includes(userAInviter._id))
+      return res.status(400).json({ message: 'Déjà membre' })
+
+    projet.membres.push(userAInviter._id)
+    await projet.save()
+    res.json({ message: 'Membre ajouté avec succès' })
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+})
+
+router.delete('/:id/members/:userId', auth, async (req, res) => {
+  try {
+    const projet = await Project.findOne({ _id: req.params.id, createur: req.user.id })
+    if (!projet) return res.status(403).json({ message: 'Accès refusé' })
+
+    projet.membres = projet.membres.filter(m => m.toString() !== req.params.userId)
+    await projet.save()
+    res.json({ message: 'Membre retiré' })
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+})
+
+module.exports = router
